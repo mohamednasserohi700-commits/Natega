@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>نتائج البحث بالاسم | System Makers</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <div class="top-bar">
+        <div class="brand">System Makers</div>
+        <div class="logo-circle">📜</div>
+        <h1>نتيجة الثانوية العامة 2026</h1>
+        <p>نتائج البحث عن "{{ name_query }}"</p>
+    </div>
+
+    <div class="container">
+        <div class="card list-card">
+            <h2>{{ results|length }} طالب مطابق للاسم</h2>
+
+            {% if truncated %}
+            <div class="error-box">
+                النتائج كتير، تم عرض أول {{ results|length }} فقط. حاول تكتب اسم أدق (اسم أطول أو رباعي) للوصول للطالب المطلوب بسرعة.
+            </div>
+            {% endif %}
+
+            <div class="results-list">
+                {% for r in results %}
+                <a href="{{ url_for('view_result', seat_number=r.seat_number) }}" class="result-item">
+                    <div class="result-item-info">
+                        <div class="result-item-name">{{ r.name }}</div>
+                        <div class="result-item-seat">رقم الجلوس: {{ r.seat_number }}</div>
+                    </div>
+                    <div class="status-badge-sm {{ r.status_class }}">{{ r.status_icon }} {{ r.status_label }}</div>
+                </a>
+                {% endfor %}
+            </div>
+
+            <a href="{{ url_for('index') }}" class="back-link">↩ بحث جديد</a>
+        </div>
+        <a href="https://www.facebook.com/profile.php?id=100095476066188" target="_blank" rel="noopener noreferrer" class="fb-btn">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M22 12c0-5.523-4.477-10-10-10S2 6.477 2 12c0 4.991 3.657 9.128 8.438 9.879v-6.988h-2.54V12h2.54V9.797c0-2.506 1.492-3.89 3.777-3.89 1.094 0 2.238.195 2.238.195v2.46h-1.26c-1.243 0-1.63.771-1.63 1.562V12h2.773l-.443 2.891h-2.33v6.988C18.343 21.128 22 16.991 22 12z"/></svg>
+            <span>صفحتنا على فيسبوك</span>
+        </a>
+        <p class="powered-by">مقدم من <span>System Makers</span></p>
+    </div>
+</body>
+</html>
