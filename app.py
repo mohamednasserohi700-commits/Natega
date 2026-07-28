@@ -1,10 +1,31 @@
 import os
+import glob
 import sqlite3
 from flask import Flask, render_template, request, g
 
 app = Flask(__name__)
 
-DB_FILE = os.path.join(os.path.dirname(__file__), "students.db")
+BASE_DIR = os.path.dirname(__file__)
+DB_FILE = os.path.join(BASE_DIR, "students.db")
+DB_PARTS_DIR = os.path.join(BASE_DIR, "db_parts")
+
+
+def ensure_db_assembled():
+    """لو students.db مش موجود لكن أجزاؤه موجودة في db_parts/، يجمّعها في ملف واحد."""
+    if os.path.exists(DB_FILE):
+        return
+
+    part_files = sorted(glob.glob(os.path.join(DB_PARTS_DIR, "students.db.part*")))
+    if not part_files:
+        return
+
+    with open(DB_FILE, "wb") as out_f:
+        for part_path in part_files:
+            with open(part_path, "rb") as part_f:
+                out_f.write(part_f.read())
+
+
+ensure_db_assembled()
 
 # أسماء الأعمدة الحقيقية في قاعدة البيانات
 COL_SEAT = "seating_no"
