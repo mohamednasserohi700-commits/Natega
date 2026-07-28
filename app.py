@@ -1,13 +1,52 @@
 import os
 import glob
 import sqlite3
-from flask import Flask, render_template, request, g
+from flask import Flask, render_template, request, g, session
 
 app = Flask(__name__)
+app.secret_key = os.environ.get("SECRET_KEY", "please-change-this-secret-key")
 
 BASE_DIR = os.path.dirname(__file__)
 DB_FILE = os.path.join(BASE_DIR, "students.db")
 DB_PARTS_DIR = os.path.join(BASE_DIR, "db_parts")
+
+# ملفات نظام تفعيل البحث بالاسم (خدمة مدفوعة 50 جنيه)
+ACTIVATION_CODES_FILE = os.path.join(BASE_DIR, "activation_codes.txt")
+USED_CODES_FILE = os.path.join(BASE_DIR, "used_codes.txt")
+NAME_SEARCH_PRICE = 50
+
+
+def _read_lines(path):
+    if not os.path.exists(path):
+        return []
+    with open(path, "r", encoding="utf-8") as f:
+        return [line.strip() for line in f if line.strip()]
+
+
+def _write_lines(path, lines):
+    with open(path, "w", encoding="utf-8") as f:
+        for line in lines:
+            f.write(line + "\n")
+
+
+def _append_line(path, line):
+    with open(path, "a", encoding="utf-8") as f:
+        f.write(line + "\n")
+
+
+def try_activate_code(code):
+    """يتحقق من الكود، ولو صحيح وغير مستخدم يشيله من قائمة المتاح وينقله لقائمة المستخدم."""
+    if not code:
+        return False
+
+    available_codes = _read_lines(ACTIVATION_CODES_FILE)
+    if code not in available_codes:
+        return False
+
+    available_codes.remove(code)
+    _write_lines(ACTIVATION_CODES_FILE, available_codes)
+    _append_line(USED_CODES_FILE, code)
+    return True
 
 
 def ensure_db_assembled():
@@ -93,7 +132,34 @@ def format_status(raw_status):
 
 @app.route("/", methods=["GET"])
 def index():
-    return render_template("index.html")
+    return render_template(
+        "index.html",
+        name_unlocked=session.get("name_unlocked", False),
+        name_search_price=NAME_SEARCH_PRICE,
+    )
+
+
+@app.route("/activate", methods=["POST"])
+def activate():
+    code = request.form.get("activation_code", "").strip()
+
+    if try_activate_code(code):
+        session["name_unlocked"] = True
+        return render_template(
+            "index.html",
+            success="تم التفعيل بنجاح، تقدر دلوقتي تستخدم البحث بالاسم 🎉",
+            active_tab="name",
+            name_unlocked=True,
+            name_search_price=NAME_SEARCH_PRICE,
+        )
+
+    return render_template(
+        "index.html",
+        error="الكود غير صحيح أو تم استخدامه من قبل",
+        active_tab="name",
+        name_unlocked=session.get("name_unlocked", False),
+        name_search_price=NAME_SEARCH_PRICE,
+    )
 
 
 def build_result(row):
@@ -129,7 +195,13 @@ def search_by_seat():
     seat_number = request.form.get("seat_number", "").strip()
 
     if not seat_number:
-        return render_template("index.html", error="من فضلك ادخل رقم الجلوس", active_tab="seat")
+        return render_template(
+            "index.html",
+            error="من فضلك ادخل رقم الجلوس",
+            active_tab="seat",
+            name_unlocked=session.get("name_unlocked", False),
+            name_search_price=NAME_SEARCH_PRICE,
+        )
 
     try:
         db = get_db()
@@ -143,6 +215,8 @@ def search_by_seat():
             "index.html",
             error="حدث خطأ في الاتصال بقاعدة البيانات، حاول لاحقًا",
             active_tab="seat",
+            name_unlocked=session.get("name_unlocked", False),
+            name_search_price=NAME_SEARCH_PRICE,
         )
 
     if row is None:
@@ -151,6 +225,8 @@ def search_by_seat():
             error="لا توجد نتيجة لرقم الجلوس المدخل، تأكد من الرقم وحاول مرة أخرى",
             seat_number=seat_number,
             active_tab="seat",
+            name_unlocked=session.get("name_unlocked", False),
+            name_search_price=NAME_SEARCH_PRICE,
         )
 
     return render_template("result.html", result=build_result(row))
@@ -160,10 +236,25 @@ MAX_NAME_RESULTS = 30
 
 
 def search_by_name():
+    if not session.get("name_unlocked"):
+        return render_template(
+            "index.html",
+            error=f"البحث بالاسم خدمة مدفوعة ({NAME_SEARCH_PRICE} جنيه). فعّلها بالكود عشان تقدر تستخدمها",
+            active_tab="name",
+            name_unlocked=False,
+            name_search_price=NAME_SEARCH_PRICE,
+        )
+
     name_query = request.form.get("student_name", "").strip()
 
     if not name_query:
-        return render_template("index.html", error="من فضلك ادخل اسم الطالب", active_tab="name")
+        return render_template(
+            "index.html",
+            error="من فضلك ادخل اسم الطالب",
+            active_tab="name",
+            name_unlocked=True,
+            name_search_price=NAME_SEARCH_PRICE,
+        )
 
     if len(name_query) < 3:
         return render_template(
@@ -171,6 +262,8 @@ def search_by_name():
             error="اكتب 3 أحرف على الأقل من اسم الطالب عشان البحث يبقى أدق",
             name_query=name_query,
             active_tab="name",
+            name_unlocked=True,
+            name_search_price=NAME_SEARCH_PRICE,
         )
 
     try:
@@ -185,6 +278,8 @@ def search_by_name():
             "index.html",
             error="حدث خطأ في الاتصال بقاعدة البيانات، حاول لاحقًا",
             active_tab="name",
+            name_unlocked=True,
+            name_search_price=NAME_SEARCH_PRICE,
         )
 
     if not rows:
@@ -193,6 +288,8 @@ def search_by_name():
             error="لا يوجد طلاب بهذا الاسم، تأكد من كتابة الاسم صح وحاول مرة أخرى",
             name_query=name_query,
             active_tab="name",
+            name_unlocked=True,
+            name_search_price=NAME_SEARCH_PRICE,
         )
 
     # طالب واحد بس مطابق -> نعرض نتيجته مباشرة
