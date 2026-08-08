@@ -5,6 +5,11 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>نتيجة الطالب - {{ result.name }} | System Makers</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+
+    <script async
+src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-1645125257962461"
+crossorigin="anonymous"></script>
+
 </head>
 <body>
     <div class="top-bar">
@@ -40,6 +45,19 @@
             <div class="info-row">
                 <span class="info-label">التقدير العام</span>
                 <span class="info-value"><span class="grade-tag {{ result.grade_class }}">{{ result.grade_label }}</span></span>
+            </div>
+            {% endif %}
+
+            {% if result.can_register_tansik %}
+            <div class="tansik-cta">
+                <div class="tansik-cta-icon">🎓</div>
+                <div class="tansik-cta-text">
+                    <h3>مبروك النجاح! الخطوة الجاية: التنسيق</h3>
+                    <p>سجّل رغباتك في الكليات والمعاهد دلوقتي من خلال موقع التنسيق الإلكتروني الرسمي التابع لوزارة التعليم العالي.</p>
+                </div>
+                <a href="{{ result.tansik_url }}" target="_blank" rel="noopener noreferrer" class="tansik-btn">
+                    سجّل رغباتك الآن ←
+                </a>
             </div>
             {% endif %}
 
