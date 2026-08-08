@@ -99,6 +99,17 @@ def index():
     return render_template("index.html")
 
 
+@app.context_processor
+def inject_globals():
+    """متغيرات متاحة في كل القوالب من غير ما نكررها في كل render_template."""
+    return {"tansik_url": TANSIK_URL}
+
+
+@app.route("/privacy-policy", methods=["GET"])
+def privacy_policy():
+    return render_template("privacy.html")
+
+
 def build_result(row):
     seat_number, name, total, raw_status = row
     status_info = format_status(raw_status)
