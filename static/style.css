@@ -79,6 +79,18 @@ body {
     box-shadow: 0 12px 30px rgba(11, 61, 46, 0.18);
     padding: 32px 28px;
     border-top: 5px solid var(--gold);
+    animation: card-in 0.35s ease;
+}
+
+@keyframes card-in {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
 }
 
 .card h2 {
@@ -242,11 +254,16 @@ button.btn {
     font-weight: 700;
     font-family: 'Cairo', sans-serif;
     cursor: pointer;
-    transition: background 0.2s;
+    transition: background 0.2s, transform 0.15s;
 }
 
 button.btn:hover {
     background: var(--primary-light);
+    transform: translateY(-1px);
+}
+
+button.btn:active {
+    transform: translateY(0);
 }
 
 .error-box {
@@ -429,4 +446,123 @@ button.btn:hover {
 
 .back-link:hover {
     text-decoration: underline;
+}
+
+/* بانر التنسيق في الصفحة الرئيسية */
+.tansik-home-banner {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    margin-top: 18px;
+    padding: 16px 18px;
+    border-radius: 14px;
+    background: linear-gradient(145deg, var(--primary) 0%, var(--primary-light) 100%);
+    text-decoration: none;
+    box-shadow: 0 10px 24px rgba(11, 61, 46, 0.2);
+    border: 1px solid var(--gold);
+    transition: transform 0.15s;
+}
+
+.tansik-home-banner:hover {
+    transform: translateY(-2px);
+}
+
+.tansik-home-icon {
+    font-size: 26px;
+    flex-shrink: 0;
+}
+
+.tansik-home-text {
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+    flex: 1;
+}
+
+.tansik-home-text strong {
+    color: #fff;
+    font-size: 15px;
+    font-weight: 800;
+}
+
+.tansik-home-text span {
+    color: #d7e5df;
+    font-size: 12px;
+    line-height: 1.5;
+}
+
+.tansik-home-arrow {
+    color: var(--gold);
+    font-size: 18px;
+    font-weight: 800;
+    flex-shrink: 0;
+}
+
+/* روابط الفوتر */
+.footer-links {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    margin-top: 16px;
+    font-size: 13px;
+}
+
+.footer-links a {
+    color: var(--muted);
+    text-decoration: none;
+    font-weight: 600;
+    transition: color 0.2s;
+}
+
+.footer-links a:hover {
+    color: var(--primary);
+    text-decoration: underline;
+}
+
+.footer-dot {
+    color: #c7ccc9;
+}
+
+/* صفحة سياسة الخصوصية */
+.policy-card {
+    text-align: right;
+}
+
+.policy-updated {
+    text-align: center;
+    color: var(--muted);
+    font-size: 12px;
+    margin: -10px 0 20px 0;
+}
+
+.policy-card h2 {
+    text-align: right;
+    font-size: 16px;
+    color: var(--primary);
+    margin: 22px 0 8px 0;
+}
+
+.policy-card h2:first-of-type {
+    margin-top: 0;
+}
+
+.policy-card p {
+    font-size: 14px;
+    line-height: 1.9;
+    color: var(--text);
+    margin: 0 0 8px 0;
+}
+
+.policy-card ul {
+    margin: 0 0 8px 0;
+    padding-inline-start: 22px;
+    font-size: 14px;
+    line-height: 1.9;
+    color: var(--text);
+}
+
+.policy-card a {
+    color: var(--primary-light);
+    font-weight: 700;
 }
