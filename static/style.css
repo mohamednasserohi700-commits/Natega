@@ -368,6 +368,55 @@ button.btn:hover {
     color: var(--primary);
 }
 
+/* كارت التنسيق (تسجيل الرغبات) */
+.tansik-cta {
+    margin-top: 24px;
+    padding: 22px 20px;
+    border-radius: 14px;
+    background: linear-gradient(145deg, var(--primary) 0%, var(--primary-light) 100%);
+    text-align: center;
+    box-shadow: 0 10px 24px rgba(11, 61, 46, 0.25);
+    border: 1px solid var(--gold);
+}
+
+.tansik-cta-icon {
+    font-size: 34px;
+    margin-bottom: 6px;
+}
+
+.tansik-cta-text h3 {
+    margin: 0 0 8px 0;
+    color: #fff;
+    font-size: 17px;
+    font-weight: 800;
+}
+
+.tansik-cta-text p {
+    margin: 0 0 16px 0;
+    color: #d7e5df;
+    font-size: 13px;
+    line-height: 1.7;
+}
+
+.tansik-btn {
+    display: inline-block;
+    width: 100%;
+    padding: 14px 10px;
+    background: var(--gold);
+    color: var(--primary);
+    border-radius: 10px;
+    text-decoration: none;
+    font-family: 'Cairo', sans-serif;
+    font-weight: 800;
+    font-size: 15px;
+    transition: transform 0.15s, background 0.2s;
+}
+
+.tansik-btn:hover {
+    background: #dcb666;
+    transform: translateY(-1px);
+}
+
 .back-link {
     display: block;
     text-align: center;
