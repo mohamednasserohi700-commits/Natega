@@ -43,6 +43,9 @@ STATUS_MAP = {
 
 DEFAULT_STATUS = {"label": None, "css_class": "status-second", "icon": "ℹ️"}
 
+# رابط موقع التنسيق الإلكتروني الرسمي التابع لوزارة التعليم العالي والبحث العلمي
+TANSIK_URL = "https://tansik.digital.gov.eg/"
+
 # الحد الأقصى للمجموع الكلي (المجموع من 320)
 MAX_TOTAL = 320
 
@@ -113,6 +116,9 @@ def build_result(row):
         "grade_label": grade_info["label"] if grade_info else None,
         "grade_class": grade_info["css_class"] if grade_info else None,
         "grade_percentage": grade_info["percentage"] if grade_info else None,
+        # التسجيل في موقع التنسيق بيبقى متاح بس للطلاب الناجحين
+        "can_register_tansik": status_info["css_class"] == "status-pass",
+        "tansik_url": TANSIK_URL,
     }
 
 
